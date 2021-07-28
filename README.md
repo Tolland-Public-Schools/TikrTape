@@ -1,7 +1,7 @@
 # TikrTape
 A free and open source stock ticker designed and developed by student IT interns at Tolland Public Schools. 
 
-![screenshot]()
+![screenshot](Tolland-Public-Schools/TikrTape/blob/main/ScreenShot.png)
 
 ## Features
 
