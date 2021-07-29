@@ -27,9 +27,11 @@ using System.Text.RegularExpressions;
 public class SettingsMenu : MonoBehaviour
 {
     public GameObject userInput;
-    public GameObject RefreshSlider;
+    public GameObject stockRefreshSlider;
+    public GameObject newsRefreshSlider;
     private string userInputStr;
-    private int refreshFreq;
+    private int stockRefreshFreq;
+    private int newsRefreshFreq;
 
     public void Start()
     {
@@ -37,7 +39,8 @@ public class SettingsMenu : MonoBehaviour
         Cursor.visible = true;
         //make sure the user input box and slider match the state saved in user prefs
         userInput.GetComponent<TMP_InputField>().text = PlayerPrefs.GetString("rawSymbols");
-        RefreshSlider.GetComponent<Slider>().value = (float)PlayerPrefs.GetInt("refreshFreq");
+        stockRefreshSlider.GetComponent<Slider>().value = (float)PlayerPrefs.GetInt("stockRefreshFreq");
+        newsRefreshSlider.GetComponent<Slider>().value = (float)PlayerPrefs.GetInt("newsRefreshFreq");
     }
 
     public void ValidateCharacters()
@@ -66,10 +69,13 @@ public class SettingsMenu : MonoBehaviour
     //button functions:
     public void Save() //commit changes to user prefs and exit
     {
-        
-        //update updateFreq value
-        refreshFreq = (int)RefreshSlider.GetComponent<Slider>().value;
-        PlayerPrefs.SetInt("refreshFreq", refreshFreq);
+        //update stock update freq value
+        stockRefreshFreq = (int)stockRefreshSlider.GetComponent<Slider>().value;
+        PlayerPrefs.SetInt("stockRefreshFreq", stockRefreshFreq);
+
+        //update news update freq value
+        newsRefreshFreq = (int)newsRefreshSlider.GetComponent<Slider>().value;
+        PlayerPrefs.SetInt("newsRefreshFreq", newsRefreshFreq);
 
         //update stock symbol list in user prefs
         userInputStr = userInput.GetComponent<TMP_InputField>().text;

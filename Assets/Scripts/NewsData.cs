@@ -37,32 +37,40 @@ public class NewsData
 		newsList.Clear();
 
 		//get articles from each source and add to newsList
-		GetRss(EconFeed,"TheEconomist");
-		GetRss(NYTimesFeed, "NewYorkTimes");
+		GetRss(EconFeed,"TheEconomist", 30); //match NYT so Econ doesn't dominate the feed
+		GetRss(NYTimesFeed, "NewYorkTimes", 30); //rss feed usually only has around 25 articles
 	}
 
-	public async void GetRss(string sourceFeed, string sourceName)
+	public async void GetRss(string sourceFeed, string sourceName, int maxAmtArticles)
 	{
+		int amtArticles = maxAmtArticles;
 		string _FeedUri = sourceFeed;
 		using (var xmlReader = XmlReader.Create(_FeedUri, new XmlReaderSettings() {Async = false}))
 		{
 			var feedReader = new RssFeedReader(xmlReader);
 			while (await feedReader.Read())
 			{
-				if (feedReader.ElementType == Microsoft.SyndicationFeed.SyndicationElementType.Item)
+				if (amtArticles > 0)
 				{
-					//assign each object from the syndication feed as an article
-					ISyndicationItem article = await feedReader.ReadItem();
+					if (feedReader.ElementType == Microsoft.SyndicationFeed.SyndicationElementType.Item)
+					{
+						//assign each object from the syndication feed as an article
+						ISyndicationItem article = await feedReader.ReadItem();
 
-					//get the title and description from the article
-					string title = article.Title;
-					string description = article.Description;
+						//get the title and description from the article
+						string title = article.Title;
+						string description = article.Description;
 
-					//shorten string if needed
-					title = Truncate(article.Title, 60);
+						//shorten string if needed
+						title = Truncate(article.Title, 60);
+						description = Truncate(article.Description, 145);
 
-					//add the article, shortened or not, to newsList
-					newsList.Add(new NewsItem { Title = title, Description = description, Source = sourceName });
+						//add the article, shortened or not, to newsList
+						newsList.Add(new NewsItem { Title = title, Description = description, Source = sourceName });
+
+						amtArticles -= 1;
+						////Debug.Log("amount of articles from "+sourceName+": "+(maxAmtArticles - amtArticles).ToString());
+					}
 				}
 			}
 		}
