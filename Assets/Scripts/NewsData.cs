@@ -27,23 +27,46 @@ public class NewsData
 	public List<ISyndicationItem> rawRssList = new List<ISyndicationItem>(); //unprocessed news list with full headlines and descriptions
 	public List<NewsItem> newsList = new List<NewsItem>(); //final, processed list
 
-	//rss feed links
+	//* hardcoded rss feed links
 	private string EconFeed = "https://www.economist.com/business/rss.xml";
-	private string NYTimesFeed = "https://rss.nytimes.com/services/xml/rss/nyt/US.xml";
+	private string NYTFeed = "https://rss.nytimes.com/services/xml/rss/nyt/US.xml";
 
 	public void GetNews() //overall method that calls other methods
 	{
 		//make sure there's no old data in newsList
 		newsList.Clear();
 
-		//get articles from each source and add to newsList
-		GetRss(EconFeed,"TheEconomist", 30); //match NYT so Econ doesn't dominate the feed
-		GetRss(NYTimesFeed, "NewYorkTimes", 30); //rss feed usually only has around 25 articles
+		//get data from user prefs
+
+		//Economist
+		if (PlayerPrefs.GetString("ECON") == "true")
+		{
+			GetRss("Economist", EconFeed);
+		}
+		//New York Times
+		if (PlayerPrefs.GetString("NYT") == "true")
+		{
+			GetRss("NewYorkTimes", NYTFeed);
+		}
+
+		//custom feeds
+		if (PlayerPrefs.GetString("CNS1") != "")
+		{
+			GetRss("CNS1", PlayerPrefs.GetString("CNS1"));
+		}
+		if (PlayerPrefs.GetString("CNS2") != "")
+		{
+			GetRss("CNS2", PlayerPrefs.GetString("CNS2"));
+		}
+		if (PlayerPrefs.GetString("CNS3") != "")
+		{
+			GetRss("CNS3", PlayerPrefs.GetString("CNS3"));
+		}
 	}
 
-	public async void GetRss(string sourceFeed, string sourceName, int maxAmtArticles)
+	public async void GetRss(string sourceName, string sourceFeed)
 	{
-		int amtArticles = maxAmtArticles;
+		int amtArticles = 30;
 		string _FeedUri = sourceFeed;
 		using (var xmlReader = XmlReader.Create(_FeedUri, new XmlReaderSettings() {Async = false}))
 		{
@@ -69,7 +92,6 @@ public class NewsData
 						newsList.Add(new NewsItem { Title = title, Description = description, Source = sourceName });
 
 						amtArticles -= 1;
-						////Debug.Log("amount of articles from "+sourceName+": "+(maxAmtArticles - amtArticles).ToString());
 					}
 				}
 			}

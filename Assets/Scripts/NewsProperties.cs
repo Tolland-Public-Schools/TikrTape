@@ -43,7 +43,7 @@ public class NewsProperties : MonoBehaviour
 	{
 		//set correct news source image
         sourceLogo = transform.GetChild(2).gameObject;
-		if (newsSource == "TheEconomist") //set sprite as Economist
+		if (newsSource == "Economist") //set sprite as Economist
 		{
 			sourceLogo.GetComponent<SpriteRenderer>().sprite = Economist;
 		}
