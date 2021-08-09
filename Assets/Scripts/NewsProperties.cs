@@ -32,6 +32,7 @@ public class NewsProperties : MonoBehaviour
     public GameObject sourceLogo;
     public Sprite NYT;
     public Sprite Economist;
+    public Sprite Generic;
 
     //movement variables
     private Vector3 velocity;
@@ -51,6 +52,10 @@ public class NewsProperties : MonoBehaviour
 		{
 			sourceLogo.GetComponent<SpriteRenderer>().sprite = NYT;
 		}
+        else
+        {
+            sourceLogo.GetComponent<SpriteRenderer>().sprite = Generic;
+        }
 	}
 
     void Update()

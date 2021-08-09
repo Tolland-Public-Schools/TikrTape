@@ -342,6 +342,7 @@ MonoBehaviour:
   sourceLogo: {fileID: 0}
   NYT: {fileID: 21300000, guid: ea64195ce15123c4bb9a842e3d0b91fd, type: 3}
   Economist: {fileID: 21300000, guid: 31e96d548c5b6ec439a0f26581ea896f, type: 3}
+  Generic: {fileID: 21300000, guid: 772312d31046cb349b0f233e6c08bc78, type: 3}
   scrollSpeed: 0
 --- !u!1 &7801421077114375252
 GameObject:

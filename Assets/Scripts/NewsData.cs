@@ -66,35 +66,42 @@ public class NewsData
 
 	public async void GetRss(string sourceName, string sourceFeed)
 	{
-		int amtArticles = 30;
-		string _FeedUri = sourceFeed;
-		using (var xmlReader = XmlReader.Create(_FeedUri, new XmlReaderSettings() {Async = false}))
+		try
 		{
-			var feedReader = new RssFeedReader(xmlReader);
-			while (await feedReader.Read())
+			int amtArticles = 30;
+			string _FeedUri = sourceFeed;
+			using (var xmlReader = XmlReader.Create(_FeedUri, new XmlReaderSettings() { Async = false }))
 			{
-				if (amtArticles > 0)
+				var feedReader = new RssFeedReader(xmlReader);
+				while (await feedReader.Read())
 				{
-					if (feedReader.ElementType == Microsoft.SyndicationFeed.SyndicationElementType.Item)
+					if (amtArticles > 0)
 					{
-						//assign each object from the syndication feed as an article
-						ISyndicationItem article = await feedReader.ReadItem();
+						if (feedReader.ElementType == Microsoft.SyndicationFeed.SyndicationElementType.Item)
+						{
+							//assign each object from the syndication feed as an article
+							ISyndicationItem article = await feedReader.ReadItem();
 
-						//get the title and description from the article
-						string title = article.Title;
-						string description = article.Description;
+							//get the title and description from the article
+							string title = article.Title;
+							string description = article.Description;
 
-						//shorten string if needed
-						title = Truncate(article.Title, 60);
-						description = Truncate(article.Description, 145);
+							//shorten string if needed
+							title = Truncate(article.Title, 60);
+							description = Truncate(article.Description, 145);
 
-						//add the article, shortened or not, to newsList
-						newsList.Add(new NewsItem { Title = title, Description = description, Source = sourceName });
+							//add the article, shortened or not, to newsList
+							newsList.Add(new NewsItem { Title = title, Description = description, Source = sourceName });
 
-						amtArticles -= 1;
+							amtArticles -= 1;
+						}
 					}
 				}
 			}
+		}
+		catch
+		{
+			Debug.Log("error with" + sourceName);
 		}
 	}
 
