@@ -87,7 +87,14 @@ public class Scroller : MonoBehaviour{
 		{
 			currentTime = DateTime.Now.ToString("t");
 			//refresh if it's time
-			RefreshTime();
+			if(isStock == true)
+			{
+				StockRefreshTime();
+			}
+			else if (isStock == false)
+			{
+				NewsRefreshTime();
+			}
 			elapsed = 0;
 		}
 
@@ -95,9 +102,9 @@ public class Scroller : MonoBehaviour{
 		Loop();
 	}
 
-	void RefreshTime()
+	void StockRefreshTime()
 	{
-		refreshFreq = PlayerPrefs.GetInt("refreshFreq");
+		refreshFreq = PlayerPrefs.GetInt("stockRefreshFreq");
 
 		//15 minutes
 		if (refreshFreq == 0)
@@ -113,7 +120,7 @@ public class Scroller : MonoBehaviour{
 					//refresh data
 					RefreshData();
 
-					Debug.Log("UPDATE FREQUENCY SET TO EVERY 15 MINUTES. TIME IS: " + currentTime + ", REFRESHING DATA");
+					Debug.Log("STOCK UPDATE FREQUENCY SET TO EVERY 15 MINUTES. TIME IS: " + currentTime + ", REFRESHING DATA");
 				}
 			}
 		}
@@ -132,7 +139,7 @@ public class Scroller : MonoBehaviour{
 					//refresh data
 					RefreshData();
 
-					Debug.Log("UPDATE FREQUENCY SET TO EVERY HALF HOUR. TIME IS: " + currentTime + ", REFRESHING DATA");
+					Debug.Log("STOCK UPDATE FREQUENCY SET TO EVERY HALF HOUR. TIME IS: " + currentTime + ", REFRESHING DATA");
 				}
 			}
 		}
@@ -150,13 +157,78 @@ public class Scroller : MonoBehaviour{
 					refreshed = true;
 					RefreshData();
 
-					Debug.Log("UPDATE FREQUENCY SET TO HOURLY. TIME IS: " + currentTime + ", REFRESHING DATA");
+					Debug.Log("STOCK UPDATE FREQUENCY SET TO HOURLY. TIME IS: " + currentTime + ", REFRESHING DATA");
 				}
 			}
 		}
 
 		//reset refreshed logic for the next time if it's still active and not a refresh time
 		if (DateTime.Now.Minute != 0 && DateTime.Now.Minute != 15 && DateTime.Now.Minute != 30 && DateTime.Now.Minute != 45)
+		{
+			refreshed = false;
+		}
+	}
+
+	void NewsRefreshTime()
+	{
+		refreshFreq = PlayerPrefs.GetInt("newsRefreshFreq");
+
+		//1 hour
+		if (refreshFreq == 0)
+		{
+			if (refreshed == false) //prevent from calling twice after start or refresh
+			{
+				//on the hour, every hour
+				if (lastRefresh.Hour < DateTime.Now.Hour || (lastRefresh.Hour == 23 && DateTime.Now.Hour == 0))
+				{
+					//set last refresh hour to current time
+					lastRefresh = DateTime.Now;
+					refreshed = true;
+					RefreshData();
+
+					Debug.Log("NEWS UPDATE FREQUENCY SET TO HOURLY. TIME IS: " + currentTime + ", REFRESHING DATA");
+				}
+			}
+		}
+
+		//3 hours
+		if (refreshFreq == 1)
+		{
+			if (refreshed == false) //prevent from calling twice after start or refresh
+			{
+				//on the hour, every hour
+				if ((lastRefresh.Hour + 2) < DateTime.Now.Hour || (lastRefresh.Hour == 23 && DateTime.Now.Hour == 0))
+				{
+					//set last refresh hour to current time
+					lastRefresh = DateTime.Now;
+					refreshed = true;
+					RefreshData();
+
+					Debug.Log("NEWS UPDATE FREQUENCY SET TO 3 HOURS. TIME IS: " + currentTime + ", REFRESHING DATA");
+				}
+			}
+		}
+
+		//6 hours
+		if (refreshFreq == 2)
+		{
+			if (refreshed == false) //prevent from calling twice after start or refresh
+			{
+				//on the hour, every hour
+				if ((lastRefresh.Hour + 5) < DateTime.Now.Hour || (lastRefresh.Hour == 23 && DateTime.Now.Hour == 0))
+				{
+					//set last refresh hour to current time
+					lastRefresh = DateTime.Now;
+					refreshed = true;
+					RefreshData();
+
+					Debug.Log("NEWS UPDATE FREQUENCY SET TO 6 HOURS. TIME IS: " + currentTime + ", REFRESHING DATA");
+				}
+			}
+		}
+
+		//reset refreshed logic for the next time if it's still active and not a refresh time
+		if (DateTime.Now.Minute != 0)
 		{
 			refreshed = false;
 		}
@@ -319,11 +391,6 @@ public class Scroller : MonoBehaviour{
 					{
 						spriteRenderer.enabled = false;
 					}
-
-					//if the object is not in screen bounds hide the image
-
-
-					//between screenbounds.x and -screenbounds.x (plus a little overflow)
 				}
 			}
 		}
