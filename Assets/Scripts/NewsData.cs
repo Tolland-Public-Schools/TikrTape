@@ -87,7 +87,7 @@ public class NewsData
 							string description = article.Description;
 
 							//shorten string if needed
-							title = Truncate(article.Title, 60);
+							title = Truncate(article.Title, 57);
 							description = Truncate(article.Description, 145);
 
 							//add the article, shortened or not, to newsList
@@ -114,6 +114,17 @@ public class NewsData
 			//add '...'
 			source = source + "...";
 		}
+
+		//check for html artifacts
+		if (source.Contains("<"))
+		{
+			int index = source.IndexOf("<");
+			if (index >= 0)
+			{
+				source = source.Substring(0, index);
+			}
+		}
+
 		return source;
 	}
 }
