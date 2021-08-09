@@ -9,7 +9,7 @@ A free and open source stock ticker designed and developed by IT interns at Toll
 - Compatible with any screen size.
 - Stocks can easily be added/ removed via the settings menu.
 - Default headlines from the Economist and New York Times.
-- Optional custom rss news source uris.
+- Up to 3 custom rss news sources.
 
 ## Setup & Development
 
