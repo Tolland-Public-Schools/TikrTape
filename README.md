@@ -23,5 +23,7 @@ Current hardcoded yet easily adjustable features are:
  - Position of stocks/news items (Unity editor under News/Stock scroller.cs attached to game object)
  - Default stock symbols (string at top of Scroller.cs)
 
+[Diagram of script structure](https://github.com/Tolland-Public-Schools/TikrTape/wiki/General-Script-Structure-Diagram)
+
 ## License
 GNU GPL v3.0
