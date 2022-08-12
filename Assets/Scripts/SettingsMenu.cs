@@ -166,7 +166,7 @@ public class SettingsMenu : MonoBehaviour
 
     public void ResetStockSymbols()
     {
-        stockUserInputStr = "AAPL, GOOGL, MSFT, AMZN, FB, TSLA, MRNA, GE, NVDA, JPM, AMD, V, JNJ, QCOM, DELL, ADBE, NFLX, TWTR, ORCL, COIN, PFE, GME";
+        stockUserInputStr = "AAPL, GOOGL, MSFT, AMZN, TSLA, MRNA, GE, NVDA, JPM, AMD, V, JNJ, QCOM, DELL, ADBE, NFLX, TWTR, ORCL, COIN, PFE, F, AMC, DIS, RBLX";
         userInput.GetComponent<TMP_InputField>().text = stockUserInputStr;
     }
 }
