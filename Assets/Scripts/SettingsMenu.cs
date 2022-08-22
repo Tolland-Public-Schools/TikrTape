@@ -26,12 +26,10 @@ using System.Text.RegularExpressions;
 public class SettingsMenu : MonoBehaviour
 {
     private string stockUserInputStr;
-    private int stockRefreshFreq;
-    private int newsRefreshFreq;
-    //game objects in scene
+    private int refreshFreq;
+    // game objects in scene
     public GameObject userInput;
-    public GameObject stockRefreshSlider;
-    public GameObject newsRefreshSlider;
+    public GameObject refreshSlider;
     public GameObject economistToggle;
     public GameObject nytToggle;
     public GameObject CNS1Obj;
@@ -40,20 +38,19 @@ public class SettingsMenu : MonoBehaviour
 
     public void Start()
     {
-        //make sure the cursor is visable
+        // make sure the cursor is visable
         Cursor.visible = true;
         
-        //make sure UI elements match the state saved in userprefs
+        // make sure UI elements match the state saved in userprefs
         
-        //input boxes: 
+        // input boxes: 
         userInput.GetComponent<TMP_InputField>().text = PlayerPrefs.GetString("rawSymbols");
         CNS1Obj.GetComponent<TMP_InputField>().text = PlayerPrefs.GetString("CNS1");
         CNS2Obj.GetComponent<TMP_InputField>().text = PlayerPrefs.GetString("CNS2");
         CNS3Obj.GetComponent<TMP_InputField>().text = PlayerPrefs.GetString("CNS3");
-        //sliders:
-        stockRefreshSlider.GetComponent<Slider>().value = (float)PlayerPrefs.GetInt("stockRefreshFreq");
-        newsRefreshSlider.GetComponent<Slider>().value = (float)PlayerPrefs.GetInt("newsRefreshFreq");
-        //toggle boxes:
+        // sliders:
+        refreshSlider.GetComponent<Slider>().value = (float)PlayerPrefs.GetInt("refreshFreq");
+        // toggle boxes:
         if (PlayerPrefs.GetString("ECON") == "true")
         {
             economistToggle.GetComponent<Toggle>().isOn = true;
@@ -74,30 +71,26 @@ public class SettingsMenu : MonoBehaviour
 
     public void ValidateCharacters()
     {
-        //only allow characters A-Z (capital or not) and commas
+        // only allow characters A-Z (capital or not) and commas
         userInput.GetComponent<TMP_InputField>().text = Regex.Replace(userInput.GetComponent<TMP_InputField>().text, @"[^a-zA-Z, ]", "");
         userInput.GetComponent<TMP_InputField>().text = userInput.GetComponent<TMP_InputField>().text.ToUpper();
     }
 
-    //button functions:
-    public void Save() //commit changes to user prefs and exit
+    // button functions:
+    public void Save() // commit changes to user prefs and exit
     {
-        //update stock update freq value
-        stockRefreshFreq = (int)stockRefreshSlider.GetComponent<Slider>().value;
-        PlayerPrefs.SetInt("stockRefreshFreq", stockRefreshFreq);
+        // update stock update freq value
+        refreshFreq = (int)refreshSlider.GetComponent<Slider>().value;
+        PlayerPrefs.SetInt("refreshFreq", refreshFreq);
 
-        //update news update freq value
-        newsRefreshFreq = (int)newsRefreshSlider.GetComponent<Slider>().value;
-        PlayerPrefs.SetInt("newsRefreshFreq", newsRefreshFreq);
-
-        //update stock symbol list in user prefs
+        // update stock symbol list in user prefs
         stockUserInputStr = userInput.GetComponent<TMP_InputField>().text;
         PlayerPrefs.SetString("rawSymbols", stockUserInputStr);
 
-        //save the news sources and feed links to user prefs
+        // save the news sources and feed links to user prefs
         FormatNews();
         
-        //go back to scroller 
+        // switch to scroller 
         SceneManager.LoadScene("Scroller");
     }
 
@@ -111,7 +104,7 @@ public class SettingsMenu : MonoBehaviour
     {
         List<string> newsPrefsList = new List<string>();
         
-        //check if switches are toggled
+        // check if switches are toggled
         if(economistToggle.GetComponent<Toggle>().isOn == true)
         {
             PlayerPrefs.SetString("ECON", "true");
@@ -132,7 +125,7 @@ public class SettingsMenu : MonoBehaviour
 
         if(CNS1Obj.GetComponent<TMP_InputField>().text != null | CNS1Obj.GetComponent<TMP_InputField>().text != "")
         {
-            //add to player prefs
+            // add to player prefs
             string inputRss = CNS1Obj.GetComponent<TMP_InputField>().text;
             PlayerPrefs.SetString("CNS1", inputRss);
         }
@@ -143,7 +136,7 @@ public class SettingsMenu : MonoBehaviour
 
         if(CNS2Obj.GetComponent<TMP_InputField>().text != null | CNS2Obj.GetComponent<TMP_InputField>().text != "")
         {
-            //add to player prefs
+            // add to player prefs
             string inputRss = CNS2Obj.GetComponent<TMP_InputField>().text;
             PlayerPrefs.SetString("CNS2", inputRss);
         }
@@ -154,7 +147,7 @@ public class SettingsMenu : MonoBehaviour
 
         if(CNS3Obj.GetComponent<TMP_InputField>().text != null | CNS3Obj.GetComponent<TMP_InputField>().text != "")
         {
-            //add to player prefs
+            // add to player prefs
             string inputRss = CNS3Obj.GetComponent<TMP_InputField>().text;
             PlayerPrefs.SetString("CNS3", inputRss);
         }
@@ -166,7 +159,7 @@ public class SettingsMenu : MonoBehaviour
 
     public void ResetStockSymbols()
     {
-        stockUserInputStr = "AAPL, GOOGL, MSFT, AMZN, TSLA, MRNA, GE, NVDA, JPM, AMD, V, JNJ, QCOM, DELL, ADBE, NFLX, TWTR, ORCL, COIN, PFE, F, AMC, DIS, RBLX";
+        stockUserInputStr = "AAPL, GOOGL, MSFT, AMZN, TSLA, MRNA, GE, NVDA, JPM, AMD, V, JNJ, QCOM, DELL, ADBE, NFLX, TWTR, ORCL, COIN, PFE, F, AMC, DIS";
         userInput.GetComponent<TMP_InputField>().text = stockUserInputStr;
     }
 }

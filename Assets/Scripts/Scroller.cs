@@ -18,6 +18,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
 
 public class Scroller : MonoBehaviour{
@@ -30,7 +31,7 @@ public class Scroller : MonoBehaviour{
     public float scrollSpeed;
     public bool ready = false;
 	public string currentTime;
-	private bool refreshed = false;
+
     public List<GameObject> GameObjList;
 	public List<string> times = new List<string>();
 	private List<string> afterTimes = new List<string>();
@@ -42,20 +43,20 @@ public class Scroller : MonoBehaviour{
     private Camera mainCamera;
     private Vector2 screenBounds;
     public readonly object _listLock = new object();
-    public float overFlow; //distance object continues scrolling before removed
-    public float topBuffer; //distance from top of screen
-    public float spacerSize; //space between objects
+    public float overFlow; // distance object continues scrolling before removed
+    public float topBuffer; // distance from top of screen
+    public float spacerSize; // space between objects
 
 	void Start()
 	{
-		//for first run set default stocks
+		// for first run set default stocks
 		if(PlayerPrefs.GetString("rawSymbols") == null)
 		{
-			//set as default
-			PlayerPrefs.SetString("rawSymbols", "AAPL, GOOGL, MSFT, AMZN, FB, TSLA, MRNA, GE, NVDA, JPM, AMD, V, JNJ, QCOM, DELL, ADBE, NFLX, TWTR, ORCL, COIN, PFE, GME");
+			// set as default
+			PlayerPrefs.SetString("rawSymbols", "AAPL, GOOGL, MSFT, AMZN");
 		}
 
-		//hide cursor
+		// hide cursor
 		Cursor.visible = false;
 		
 		// establish screen boundaries
@@ -72,201 +73,14 @@ public class Scroller : MonoBehaviour{
 			SetStockObjs();
 		}
 
-		//set lastRefresh to current time
-		lastRefresh = DateTime.Now;
-		refreshed = true;
-
-		//ready is true once all objects are instantiated so everything starts moving at the same time
+		// ready is true once all objects are instantiated so everything starts moving at the same time
 		ready = true;
 	}
 
 	void Update()
 	{
-		elapsed += Time.deltaTime;
-		if (elapsed > 30)
-		{
-			currentTime = DateTime.Now.ToString("t");
-			//refresh if it's time
-			if(isStock == true)
-			{
-				StockRefreshTime();
-			}
-			else if (isStock == false)
-			{
-				NewsRefreshTime();
-			}
-			elapsed = 0;
-		}
-
-		//loop gameObjs on screen
+		// loop gameObjs on screen
 		Loop();
-	}
-
-	void StockRefreshTime()
-	{
-		refreshFreq = PlayerPrefs.GetInt("stockRefreshFreq");
-
-		//15 minutes
-		if (refreshFreq == 0)
-		{
-			//on the hour, 15 minutes past the hour, 30 min past the hour, 45 minutes past the hour
-			if (DateTime.Now.Minute == 0 || DateTime.Now.Minute == 15 || DateTime.Now.Minute == 30 || DateTime.Now.Minute == 45)
-			{
-				if (refreshed == false) //prevent from refreshing multiple times in that minute
-				{
-					refreshed = true;
-					//set last refresh to current time
-					lastRefresh = DateTime.Now;
-					//refresh data
-					RefreshData();
-
-					Debug.Log("STOCK UPDATE FREQUENCY SET TO EVERY 15 MINUTES. TIME IS: " + currentTime + ", REFRESHING DATA");
-				}
-			}
-		}
-
-		//30 minutes
-		if (refreshFreq == 1)
-		{
-			//on the hour and half-hour, every hour
-			if (DateTime.Now.Minute == 0 || DateTime.Now.Minute == 30)
-			{
-				if (refreshed == false) //prevent from refreshing multiple times in that minute
-				{
-					refreshed = true;
-					//set last refresh to current time
-					lastRefresh = DateTime.Now;
-					//refresh data
-					RefreshData();
-
-					Debug.Log("STOCK UPDATE FREQUENCY SET TO EVERY HALF HOUR. TIME IS: " + currentTime + ", REFRESHING DATA");
-				}
-			}
-		}
-
-		//1 hour
-		if (refreshFreq == 2)
-		{
-			if (refreshed == false) //prevent from calling twice after start or refresh
-			{
-				//on the hour, every hour
-				if (lastRefresh.Hour < DateTime.Now.Hour || (lastRefresh.Hour == 23 && DateTime.Now.Hour == 0))
-				{
-					//set last refresh hour to current time
-					lastRefresh = DateTime.Now;
-					refreshed = true;
-					RefreshData();
-
-					Debug.Log("STOCK UPDATE FREQUENCY SET TO HOURLY. TIME IS: " + currentTime + ", REFRESHING DATA");
-				}
-			}
-		}
-
-		//reset refreshed logic for the next time if it's still active and not a refresh time
-		if (DateTime.Now.Minute != 0 && DateTime.Now.Minute != 15 && DateTime.Now.Minute != 30 && DateTime.Now.Minute != 45)
-		{
-			refreshed = false;
-		}
-	}
-
-	void NewsRefreshTime()
-	{
-		refreshFreq = PlayerPrefs.GetInt("newsRefreshFreq");
-
-		//1 hour
-		if (refreshFreq == 0)
-		{
-			if (refreshed == false) //prevent from calling twice after start or refresh
-			{
-				//on the hour, every hour
-				if (lastRefresh.Hour < DateTime.Now.Hour || (lastRefresh.Hour == 23 && DateTime.Now.Hour == 0))
-				{
-					//set last refresh hour to current time
-					lastRefresh = DateTime.Now;
-					refreshed = true;
-					RefreshData();
-
-					Debug.Log("NEWS UPDATE FREQUENCY SET TO HOURLY. TIME IS: " + currentTime + ", REFRESHING DATA");
-				}
-			}
-		}
-
-		//3 hours
-		if (refreshFreq == 1)
-		{
-			if (refreshed == false) //prevent from calling twice after start or refresh
-			{
-				//on the hour, every hour
-				if ((lastRefresh.Hour + 2) < DateTime.Now.Hour || (lastRefresh.Hour == 23 && DateTime.Now.Hour == 0))
-				{
-					//set last refresh hour to current time
-					lastRefresh = DateTime.Now;
-					refreshed = true;
-					RefreshData();
-
-					Debug.Log("NEWS UPDATE FREQUENCY SET TO 3 HOURS. TIME IS: " + currentTime + ", REFRESHING DATA");
-				}
-			}
-		}
-
-		//6 hours
-		if (refreshFreq == 2)
-		{
-			if (refreshed == false) //prevent from calling twice after start or refresh
-			{
-				//on the hour, every hour
-				if ((lastRefresh.Hour + 5) < DateTime.Now.Hour || (lastRefresh.Hour == 23 && DateTime.Now.Hour == 0))
-				{
-					//set last refresh hour to current time
-					lastRefresh = DateTime.Now;
-					refreshed = true;
-					RefreshData();
-
-					Debug.Log("NEWS UPDATE FREQUENCY SET TO 6 HOURS. TIME IS: " + currentTime + ", REFRESHING DATA");
-				}
-			}
-		}
-
-		//reset refreshed logic for the next time if it's still active and not a refresh time
-		if (DateTime.Now.Minute != 0)
-		{
-			refreshed = false;
-		}
-	}
-
-	void RefreshData()
-	{
-		//if Stock Controller then refresh the stock data
-		if(isStock == true)
-		{
-			// delete old stock gameObjs
-			foreach (GameObject gameObj in GameObjList)
-			{
-				// delete gameObj
-				Destroy(gameObj);
-			}
-			// clear the gameObj list
-			GameObjList.Clear();
-
-			// create new Stock GameObjs
-			SetStockObjs();
-		}
-
-		// if News Controller then refresh the news data
-		else
-		{
-			// delete old news gameObjs
-			foreach (GameObject gameObj in GameObjList)
-			{
-				// delete gameObj
-				Destroy(gameObj);
-			}
-			//clear the gameObj list
-			GameObjList.Clear();
-
-			//create new News GameObjs
-			SetNewsObjs();
-		}
 	}
 
 	void SetStockObjs()
@@ -343,7 +157,6 @@ public class Scroller : MonoBehaviour{
 			// set speed
 			NewsObj.GetComponent<NewsProperties>().scrollSpeed = scrollSpeed;
 			NewsObj.GetComponent<NewsProperties>().scroller = this;
-
 		}
 	}
 
@@ -353,7 +166,7 @@ public class Scroller : MonoBehaviour{
 		screenBounds = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, mainCamera.transform.position.z));
 	}
 
-	void Loop() //off-screen looping: after last object passes screen bounds it moves back to beginning
+	void Loop() // off-screen looping: after last object passes screen bounds it moves back to beginning
 	{
 		lock (_listLock)
 		{
@@ -361,28 +174,28 @@ public class Scroller : MonoBehaviour{
 			{
 				if (obj.transform.position.x < (-screenBounds.x - overFlow)) //if it passes the screen bounds
 				{
-					//find last object in list
+					// find last object in list
 					int listItems = GameObjList.Count;
 					GameObject lastItem = GameObjList[listItems - 1];
 
-					//if it's the first list item put it after the last
+					// if it's the first list item put it after the last
 					if (obj == GameObjList[0])
 					{
 						obj.transform.position = new Vector3((lastItem.transform.position.x + spacerSize), obj.transform.position.y, 0);
-						previousObj = obj; //once moved set as previous object for reference for next obj
+						previousObj = obj; // once moved set as previous object for reference for next obj
 					}
-					else //otherwise it should be before the list element numerically before it
+					else // otherwise it should be before the list element numerically before it
 					{
 						obj.transform.position = new Vector3((previousObj.transform.position.x + spacerSize), obj.transform.position.y, 0);
-						previousObj = obj; //once moved set as previous object for reference for next obj
+						previousObj = obj; // once moved set as previous object for reference for next obj
 					}
 				}
 
-				//if it's a news object, hide the news source image until it's in screen bounds
+				// if it's a news object, hide the news source image until it's in screen bounds
 				if (isStock == false)
 				{	
 					SpriteRenderer spriteRenderer = obj.transform.GetChild(2).gameObject.GetComponent<SpriteRenderer>();
-					//if the object is in screen bounds show the image
+					// if the object is in screen bounds show the image
 					if(obj.transform.position.x < (screenBounds.x + overFlow))
 					{
 						spriteRenderer.enabled = true;
@@ -395,8 +208,8 @@ public class Scroller : MonoBehaviour{
 			}
 		}
 	}
-	//Joke:
-	//What is an astronaut's favorite key?
-	//The space bar!
+	// Joke:
+	// What is an astronaut's favorite key?
+	// The space bar!
 	// :)
 }

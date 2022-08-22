@@ -31,25 +31,25 @@ public class NewsData
 	private string EconFeed = "https://www.economist.com/business/rss.xml";
 	private string NYTFeed = "https://rss.nytimes.com/services/xml/rss/nyt/US.xml";
 
-	public void GetNews() //overall method that calls other methods
+	public void GetNews() // overall method that calls other methods
 	{
-		//make sure there's no old data in newsList
+		// make sure there's no old data in newsList
 		newsList.Clear();
 
-		//get data from user prefs
+		// get data from user prefs
 
-		//Economist
+		// Economist
 		if (PlayerPrefs.GetString("ECON") == "true")
 		{
 			GetRss("Economist", EconFeed);
 		}
-		//New York Times
+		// New York Times
 		if (PlayerPrefs.GetString("NYT") == "true")
 		{
 			GetRss("NewYorkTimes", NYTFeed);
 		}
 
-		//custom feeds
+		// custom feeds
 		if (PlayerPrefs.GetString("CNS1") != "")
 		{
 			GetRss("CNS1", PlayerPrefs.GetString("CNS1"));
@@ -79,18 +79,18 @@ public class NewsData
 					{
 						if (feedReader.ElementType == Microsoft.SyndicationFeed.SyndicationElementType.Item)
 						{
-							//assign each object from the syndication feed as an article
+							// assign each object from the syndication feed as an article
 							ISyndicationItem article = await feedReader.ReadItem();
 
-							//get the title and description from the article
+							// get the title and description from the article
 							string title = article.Title;
 							string description = article.Description;
 
-							//shorten string if needed
+							// shorten string if needed
 							title = Truncate(article.Title, 57);
 							description = Truncate(article.Description, 145);
 
-							//add the article, shortened or not, to newsList
+							// add the article, shortened or not, to newsList
 							newsList.Add(new NewsItem { Title = title, Description = description, Source = sourceName });
 
 							amtArticles -= 1;
@@ -109,13 +109,13 @@ public class NewsData
 	{
 		if (source.Length > length)
 		{
-			//cut down str length
+			// cut down str length
 			source = source.Substring(0, length);
-			//add '...'
+			// add '...'
 			source = source + "...";
 		}
 
-		//check for html artifacts
+		// check for html artifacts
 		if (source.Contains("<"))
 		{
 			int index = source.IndexOf("<");
